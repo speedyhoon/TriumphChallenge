@@ -230,7 +230,8 @@ func retrieveBody(path string) (src []byte) {
 	}
 
 	u, err := url.Parse(path)
-	if err != nil || u.Host != "racing.natsoft.com.au" || u.Scheme != "http" && u.Scheme != "https" {
+
+	if err != nil || !strings.EqualFold(u.Host, "racing.natsoft.com.au") || !strings.EqualFold(u.Scheme, "http") {
 		return
 	}
 
