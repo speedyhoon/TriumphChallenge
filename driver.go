@@ -63,14 +63,7 @@ type Driver struct {
 // sortResults returns a list of entered drivers, the event name, a list of drivers who are missing results and the longest driver name
 // given the Natsoft results and a list of competitors entered in the event.
 func sortResults(results []byte, enteredCars [][]byte) (drivers []Driver, eventName string, missing []string, longestNameLen uint) {
-	lines := bytes.Split(results, lineDelimiter)
-	for i := range lines {
-		lines[i] = bytes.TrimSpace(lines[i])
-		if len(lines[i]) >= 1 {
-			eventName = fmt.Sprintf("%s - %s", championship, string(lines[i]))
-			break
-		}
-	}
+	eventName = eventTitle(results)
 
 	matches := hasDrivers.FindAll(results, -1)
 
@@ -99,6 +92,18 @@ func sortResults(results []byte, enteredCars [][]byte) (drivers []Driver, eventN
 	}
 
 	return
+}
+
+func eventTitle(results []byte) string {
+	lines := bytes.Split(results, lineDelimiter)
+	for i := range lines {
+		lines[i] = bytes.TrimSpace(lines[i])
+		if len(lines[i]) >= 1 {
+			return fmt.Sprintf("%s - %s", championship, string(lines[i]))
+		}
+	}
+
+	return ""
 }
 
 func sortDrivers(drivers []Driver) {
