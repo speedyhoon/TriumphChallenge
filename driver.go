@@ -121,7 +121,8 @@ func newDriver(line []byte, competitors [][]byte) (driver Driver, ok bool) {
 
 	driver.RaceNumber = string(raceNum)
 	driver.Name = string(name)
-	driver.Fastest = math.MaxInt64 // Default the Fastest Lap to the slowest possible time.
+	driver.Fastest = math.MaxInt64 // Default the Fastest Lap and Qualifying Lap to the slowest possible time.
+	driver.Qualify = math.MaxInt64
 
 	var skipNextLap bool
 
@@ -137,11 +138,6 @@ func newDriver(line []byte, competitors [][]byte) (driver Driver, ok bool) {
 			}
 
 			skipNextLap = true
-
-			if driver.Runs == 1 {
-				// Set the fastest lap time obtained during qualifying/practice session
-				driver.Qualify = driver.Fastest
-			}
 			continue
 		}
 
@@ -151,9 +147,10 @@ func newDriver(line []byte, competitors [][]byte) (driver Driver, ok bool) {
 			continue
 		}
 
-		// Convert time format 00:00.0000 to 00m00.0000s so it can be parsed.
-		lapTime := strings.ReplaceAll(string(lapTimes[n]), ":", "m") + "s"
-		d, err := time.ParseDuration(lapTime)
+		lapTime, err := time.ParseDuration(
+			// Convert time format 00:00.0000 to 00m00.0000s so it can be parsed.
+			strings.ReplaceAll(string(lapTimes[n]), ":", "m") + "s",
+		)
 		if err != nil {
 			log.Println(err)
 			continue
@@ -164,24 +161,31 @@ func newDriver(line []byte, competitors [][]byte) (driver Driver, ok bool) {
 			driver.Laps++
 
 			// Only calculate the slowest lap when not in Practice/Qualifying
-			if d.Seconds() > driver.Slowest.Seconds() {
-				driver.Slowest = d
+			if lapTime.Seconds() > driver.Slowest.Seconds() {
+				driver.Slowest = lapTime
 			}
-		}
 
-		// Calculate the fastest lap even when in Run=0 (practice) so the qualifying time is set.
-		if d.Seconds() < driver.Fastest.Seconds() {
-			driver.Fastest = d
+			// Calculate the fastest lap.
+			if lapTime.Seconds() < driver.Fastest.Seconds() {
+				driver.Fastest = lapTime
+			}
+		} else if lapTime.Seconds() < driver.Qualify.Seconds() {
+			// Calculate the fastest qualifying lap only during the qualifying session/run.
+			driver.Qualify = lapTime
 		}
 	}
 
 	// If at least one session is completed,
-	if driver.Runs >= 1 {
+	if driver.Runs >= 1 && driver.Qualify != math.MaxInt64 && driver.Fastest != math.MaxInt64 {
 		// Calculate scoring percentage formula.
 		driver.Percentage = driver.Fastest.Seconds() / ((driver.Slowest.Seconds() + driver.Qualify.Seconds()) / 2) * 100
-	} else {
-		// Otherwise finish setting the qualifying time
-		driver.Qualify = driver.Fastest
+	}
+
+	// If Qualifying or Fastest lap times haven't been calculated, clear their values to prevent displaying erroneous results.
+	if driver.Qualify == math.MaxInt64 {
+		driver.Qualify = 0
+	}
+	if driver.Fastest == math.MaxInt64 {
 		driver.Fastest = 0
 	}
 
