@@ -87,12 +87,7 @@ func sortResults(results []byte, enteredCars [][]byte) (drivers []Driver, eventN
 		}
 	}
 
-	sort.SliceStable(drivers, func(i, j int) bool {
-		if drivers[i].Runs == drivers[j].Runs {
-			return drivers[i].Percentage > drivers[j].Percentage
-		}
-		return drivers[i].Runs > drivers[j].Runs
-	})
+	sortDrivers(drivers)
 
 	// Find if there are any missing competitors
 	if len(drivers) != len(enteredCars) {
@@ -104,6 +99,37 @@ func sortResults(results []byte, enteredCars [][]byte) (drivers []Driver, eventN
 	}
 
 	return
+}
+
+func sortDrivers(drivers []Driver) {
+	sort.SliceStable(drivers, func(i, j int) bool {
+		// If either driver didn't set a qualifying lap time.
+		if drivers[i].Qualify == 0 || drivers[j].Qualify == 0 {
+			// Sort qualifying time in descending order (placing the slowest lap time first and zeros last).
+			return drivers[i].Qualify > drivers[j].Qualify
+		}
+
+		// If both drivers didn't set a qualifying time.
+		if drivers[i].Qualify == 0 && drivers[j].Qualify == 0 {
+			// Sort by the quantity of laps completed in descending order (most laps first).
+			return drivers[i].Laps > drivers[j].Laps
+		}
+
+		// If both drivers don't have a percentage.
+		if drivers[i].Percentage == 0 && drivers[j].Percentage == 0 {
+			// Sort by the qualifying time in ascending order (fastest qualifying time first).
+			return drivers[i].Qualify < drivers[j].Qualify
+		}
+
+		// If both drivers have completed the same number of laps.
+		if drivers[i].Runs == drivers[j].Runs {
+			// Sort Percentage in descending order (highest percentage first).
+			return drivers[i].Percentage > drivers[j].Percentage
+		}
+
+		// Sort by the quantity of runs/session completed in descending order (most runs/sessions first)
+		return drivers[i].Runs > drivers[j].Runs
+	})
 }
 
 func newDriver(line []byte, competitors [][]byte) (driver Driver, ok bool) {
