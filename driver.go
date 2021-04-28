@@ -19,7 +19,7 @@ const (
 	decimalPlaces = 4 // How many decimal places are used by Natsoft and to display in event results
 
 	// Regular expressions
-	rDriverName   = `[a-z A-Z_\-']+`
+	rDriverName   = `([a-zA-Z_\-'/]+ )+`
 	rRacingNumber = `\d{1,3}`
 	natSoftURL    = "http://racing.natsoft.com.au/results/"
 	help          = `Instructions to use:
@@ -146,14 +146,12 @@ func newDriver(line []byte, competitors [][]byte) (driver Driver, ok bool) {
 		return
 	}
 
-	line = bytes.TrimPrefix(line, raceNum)
-	name := bytes.TrimSpace(driverName.Find(line))
-	line = bytes.TrimSpace(bytes.TrimPrefix(line, name))
-
-	driver.RaceNumber = string(raceNum)
-	driver.Name = string(name)
-	driver.Fastest = math.MaxInt64 // Default the Fastest Lap and Qualifying Lap to the slowest possible time.
-	driver.Qualify = math.MaxInt64
+	driver = Driver{
+		RaceNumber: string(raceNum),
+		Name:       string(bytes.TrimSpace(driverName.Find(line))),
+		Fastest:    math.MaxInt64, // Default the Fastest Lap and Qualifying Lap to the slowest possible time.
+		Qualify:    math.MaxInt64,
+	}
 
 	var skipNextLap bool
 
