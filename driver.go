@@ -17,10 +17,6 @@ import (
 const (
 	championship  = "All Triumph Challenge"
 	decimalPlaces = 4 // How many decimal places are used by Natsoft and to display in event results
-
-	// Regular expressions
-	rDriverName   = `([a-zA-Z_\-'/]+ )+`
-	rRacingNumber = `\d{1,3}`
 	natSoftURL    = "http://racing.natsoft.com.au/results/"
 	help          = `Instructions to use:
 	Open Natsoft racing results for the event ` + natSoftURL + `
@@ -31,20 +27,24 @@ const (
 	Type in all the competitors racing numbers that are in the event, each separated by a space.
 	Press Enter
 	Results will be generated in the same folder with today's date in spreadsheet, HTML and text format.`
+
+	// Regular expressions
+	rDriverName   = `([a-zA-Z_\-'/]+ )+`
+	rRacingNumber = `\d{1,3}`
 )
 
 var (
-	lineDelimiter = []byte("\n")
-
-	endOfSession = fmt.Sprintf(`\*:\*{2}\.\*{%d}|-:-{2}.-{%[1]d}`, decimalPlaces)    // *:**.**** or -:--.----
-	rTimes       = fmt.Sprintf(`(\d:\d{2}\.\d{%d}|%s)`, decimalPlaces, endOfSession) // lap time OR *:**.****
+	rNonLaps  = fmt.Sprintf(`\*:\*{2}\.\*{%d}|-:-{2}.-{%[1]d}`, decimalPlaces) // *:**.**** or -:--.----
+	rLapTimes = fmt.Sprintf(`(\d:\d{2}\.\d{%d}|%s)`, decimalPlaces, rNonLaps)  // lap time OR *:**.****
 
 	// matches a list of lap times by a driver
-	hasDrivers = regexp.MustCompile(fmt.Sprintf(`\n *%s( %s)+ +((\s*\d{1,2}0 )*(%s[ p])*)*`, rRacingNumber, rDriverName, rTimes))
-	lapTime    = regexp.MustCompile(rTimes)
-	missingLap = regexp.MustCompile(endOfSession)
-	racingNum  = regexp.MustCompile(fmt.Sprintf("^%s ", rRacingNumber))
-	driverName = regexp.MustCompile(rDriverName)
+	reHasDrivers = regexp.MustCompile(fmt.Sprintf(`\n *%s( %s)+ +((\s*\d{1,2}0 )*(%s[ p])*)*`, rRacingNumber, rDriverName, rLapTimes))
+	reLapTime    = regexp.MustCompile(rLapTimes)
+	reNonLaps    = regexp.MustCompile(rNonLaps)
+	reRacingNum  = regexp.MustCompile(fmt.Sprintf("^%s ", rRacingNumber))
+	reDriverName = regexp.MustCompile(rDriverName)
+
+	lineDelimiter = []byte("\n")
 )
 
 // Driver represents a competitor entered in the event
@@ -65,7 +65,7 @@ type Driver struct {
 func sortResults(results []byte, enteredCars [][]byte) (drivers []Driver, eventName string, missing []string, longestNameLen uint) {
 	eventName = eventTitle(results)
 
-	matches := hasDrivers.FindAll(results, -1)
+	matches := reHasDrivers.FindAll(results, -1)
 
 	// Iterate through all competitors lap times
 	for i := range matches {
@@ -139,7 +139,7 @@ func sortDrivers(drivers []Driver) {
 
 func newDriver(line []byte, competitors [][]byte) (driver Driver, ok bool) {
 	line = bytes.TrimSpace(line)
-	raceNum := bytes.TrimSpace(racingNum.Find(line))
+	raceNum := bytes.TrimSpace(reRacingNum.Find(line))
 
 	// Ignore any line/entry NOT in the list of paid competitors entered for the event
 	if !has(competitors, raceNum) {
@@ -148,21 +148,21 @@ func newDriver(line []byte, competitors [][]byte) (driver Driver, ok bool) {
 
 	driver = Driver{
 		RaceNumber: string(raceNum),
-		Name:       string(bytes.TrimSpace(driverName.Find(line))),
+		Name:       string(bytes.TrimSpace(reDriverName.Find(line))),
 		Fastest:    math.MaxInt64, // Default the Fastest Lap and Qualifying Lap to the slowest possible time.
 		Qualify:    math.MaxInt64,
 	}
 
 	var skipNextLap bool
 
-	lapTimes := lapTime.FindAll(line, -1)
+	lapTimes := reLapTime.FindAll(line, -1)
 
 	// Loop through all lap times.
 	for n := range lapTimes {
 		// If the lap is missing a time
-		if missingLap.Match(lapTimes[n]) {
+		if reNonLaps.Match(lapTimes[n]) {
 			//... AND If there's another lap in the list, AND the next lap is NOT the end of the Run/Session.
-			if n+1 < len(lapTimes) && !missingLap.Match(lapTimes[n+1]) {
+			if n+1 < len(lapTimes) && !reNonLaps.Match(lapTimes[n+1]) {
 				driver.Runs++
 			}
 
@@ -228,7 +228,6 @@ func retrieveBody(path string) (src []byte) {
 	}
 
 	u, err := url.Parse(path)
-
 	if err != nil || !strings.EqualFold(u.Host, "racing.natsoft.com.au") || !strings.EqualFold(u.Scheme, "http") {
 		return
 	}
