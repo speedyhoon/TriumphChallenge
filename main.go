@@ -51,28 +51,27 @@ func getEventResults() (src []byte) {
 	for {
 		// Check clipboard for event results
 		s, _ := clipboard.ReadAll()
-		if hasDrivers.MatchString(s) {
+		if reHasDrivers.MatchString(s) {
 			src = []byte(s)
 			break
 		}
 
 		// Check if clipboard contained a URL
 		src = retrieveBody(s)
-		if hasDrivers.Match(src) {
+		if reHasDrivers.Match(src) {
 			break
 		}
 
 		// Check file
 		src, _ = ioutil.ReadFile(filename)
 
-		if hasDrivers.Match(src) {
+		if reHasDrivers.Match(src) {
 			fmt.Println("Using the results from", filename)
 			return
 		}
 
 		if printOnce {
-			fmt.Println("\n\nNo results found in", filename, "or the clipboard. Please copy event results from", natSoftURL)
-			fmt.Println("Do you want to open Natsoft in your default browser? [ y / n ]")
+			fmt.Printf("\n\nNo results found in %s or the clipboard. Please copy event results from %s\nDo you want to open Natsoft in your default browser? [ y / n ]\n", filename, natSoftURL)
 			if yes(input()) {
 				openBrowser()
 			}
@@ -81,7 +80,7 @@ func getEventResults() (src []byte) {
 
 		// Check standard input
 		src = input()
-		if hasDrivers.Match(src) {
+		if reHasDrivers.Match(src) {
 			break
 		}
 
@@ -89,7 +88,7 @@ func getEventResults() (src []byte) {
 		if body := retrieveBody(string(src)); body != nil {
 			src = body
 		}
-		if hasDrivers.Match(src) {
+		if reHasDrivers.Match(src) {
 			break
 		}
 
