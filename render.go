@@ -37,7 +37,8 @@ func render(drivers []Driver, eventName string, missingCars []string, longestNam
 		if i >= 1 && drivers[i].Percentage == drivers[i-1].Percentage && drivers[i].Runs == drivers[i-1].Runs && drivers[i].Laps == drivers[i-1].Laps {
 			isEqual = true
 		} else {
-			position++
+			// Ignore positions occupied by drivers with equal results, like: =1st, =1st, =3rd, =3rd, =5th, =5th. Change to `position++` for the opposite effect like: =1st, =1st, =2nd, =2nd, =3rd, =3rd.
+			position = i + 1
 
 			isEqual = i+1 < len(drivers) && drivers[i].Percentage == drivers[i+1].Percentage && drivers[i].Runs == drivers[i+1].Runs && drivers[i].Laps == drivers[i+1].Laps
 		}
