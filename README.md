@@ -1,4 +1,6 @@
-# All Triumph Challenge
+# ![All Triumph Challenge](https://raw.githubusercontent.com/speedyhoon/TriumphChallenge/main/32x32.png) All Triumph Challenge
+[![go report card](https://goreportcard.com/badge/github.com/speedyhoon/TriumphChallenge)](https://goreportcard.com/report/github.com/speedyhoon/TriumphChallenge)
+
 A simple commandline program to collate event results for the **All Triumph Challenge** motorsport series. Its mission is to streamline result finalisation and make the process easier and more enjoyable for competitors & volunteers.
 
 [![All Triumph Challenge](https://raw.githubusercontent.com/speedyhoon/TriumphChallenge/master/tsoa.png)](https://www.tsoavic.com.au/)
@@ -15,14 +17,14 @@ Pos     # Driver       Qualify     Secs      Fastest     Secs      Slowest     S
 ```
 
 ## Instructions
-- Locate the event on Natsoft racing results
-- Copy the results. Ctrl + A then Ctrl + C on Windows or Command + A then Command + C on Mac.
-- Start TriumphChallenge.exe
-- The program will detect the Natsoft racing results in your clipboard if present. Otherwise, it will prompt for input.
+- Locate the event on [Natsoft racing results](http://racing.natsoft.com.au/results/)
+- Copy the results. `Ctrl + A` then `Ctrl + C` on Windows or `Command + A` then `Command + C` on Mac.
+- Start the TriumphChallenge program
+- The program will detect the [Natsoft racing results](http://racing.natsoft.com.au/results/) in your clipboard if present. Otherwise, it will prompt for input.
 - Type in the list of competitors racing numbers separated by a space.\
   For example: `1 881 4 55 92 5 7 9 13 43`
 - Press `Enter`
-- Results will be calculated and saved in HTML, Text and XLSX spreadsheet files with a copy of the Natsoft racing results.
+- Results will be calculated and saved in HTML, Text and XLSX spreadsheet files with a copy of the [Natsoft racing results](http://racing.natsoft.com.au/results/).
 
 
 ## Results Formula
@@ -55,6 +57,14 @@ Then is calculated:
   - Their Percentage result in descending order (highest number first)
   - Their quantity of laps completed in descending order (most laps wins).
   - If two or more competitors have the same result then both are assigned that position, for example: `1st, =2nd, =2nd, 4th, 5th, etc ...`
+- The first lap of each run/session is ignored to allow for competitors to line up on the starting grid.
+- Competitors who fail to complete a lap time during qualifying won't be eligible for any placing. 
 - Decimal numbers are calculated and sorted using 64 bit precision.
 - Percentage results in HTML and text format are displayed with 8 decimal places. Spreadsheet format uses built-in formulas to display decimal numbers (precision varies between software).
-- The first lap of each run/session is ignored to allow for competitors to line up on the starting grid.
+
+## Build
+Built using [go-winres](https://github.com/tc-hib/go-winres)
+```
+go-winres make
+go build
+```
