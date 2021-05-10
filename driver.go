@@ -25,8 +25,8 @@ const (
 	Press Enter
 	Results will be generated in the same folder with today's date in spreadsheet, HTML and text format.`
 
-	// Regular expressions
-	rDriverName   = `([a-zA-Z_\-'/]+ )+`
+	// Regular expressions.
+	rDriverName   = `([a-zA-Z_\.\-'/]+ )+` // Driver names can contain underscores, periods, hyphens, apostrophes and backslashes.
 	rRacingNumber = `\d{1,3}`
 )
 
