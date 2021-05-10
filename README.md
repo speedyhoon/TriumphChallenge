@@ -1,4 +1,4 @@
-# ![All Triumph Challenge](https://raw.githubusercontent.com/speedyhoon/TriumphChallenge/main/32x32.png) All Triumph Challenge
+# ![ATC logo](https://raw.githubusercontent.com/speedyhoon/TriumphChallenge/main/winres/32x32.png) All Triumph Challenge
 [![go report card](https://goreportcard.com/badge/github.com/speedyhoon/TriumphChallenge)](https://goreportcard.com/report/github.com/speedyhoon/TriumphChallenge)
 
 A simple commandline program to collate event results for the **All Triumph Challenge** motorsport series. Its mission is to streamline result finalisation and make the process easier and more enjoyable for competitors & volunteers.
