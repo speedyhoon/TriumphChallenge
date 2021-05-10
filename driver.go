@@ -218,7 +218,7 @@ func newDriver(line []byte, competitors [][]byte) (driver Driver, ok bool) {
 	return driver, true
 }
 
-func retrieveBody(path string) (src []byte) {
+/*func retrieveBody(path string) (src []byte) {
 	path = strings.TrimSpace(path)
 	if path == "" {
 		return
@@ -244,10 +244,10 @@ func retrieveBody(path string) (src []byte) {
 		}
 	}()
 
-	src, err = ioutil.ReadAll(resp.Body)
+	doc, err := goquery.NewDocumentFromReader(resp.Body)
 	if err != nil {
-		fmt.Println(err)
+		return
 	}
 
-	return
-}
+	return []byte(doc.Text())
+}*/

@@ -57,11 +57,11 @@ func getEventResults() (src []byte) {
 			break
 		}
 
-		// Check if clipboard contained a URL
+		/* Check if clipboard contained a URL.
 		src = retrieveBody(s)
 		if reHasDrivers.Match(src) {
 			break
-		}
+		}*/
 
 		// nolint:errcheck,gosec // Check file ignoring all errors.
 		src, _ = ioutil.ReadFile(filename)
@@ -85,13 +85,13 @@ func getEventResults() (src []byte) {
 			break
 		}
 
-		// Check if standard input contained a URL
+		/* Check if standard input contained a URL.
 		if body := retrieveBody(string(src)); body != nil {
 			src = body
 		}
 		if reHasDrivers.Match(src) {
 			break
-		}
+		}*/
 
 		// Provide some commands to exit if user gets stuck.
 		exit(src)
