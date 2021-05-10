@@ -21,7 +21,7 @@ func excelHeading(eventName string) (f *excelize.File, row int) {
 	excelStr(f, &row, "A", hPosition)
 
 	row++
-	// Create worksheet column headings in the second row
+	// Create worksheet column headings in the second row.
 	excelStr(f, &row, "A", hPosition)
 	excelStr(f, &row, "B", hRacingNumber)
 	excelStr(f, &row, "C", hDriver)
@@ -35,10 +35,11 @@ func excelHeading(eventName string) (f *excelize.File, row int) {
 	excelStr(f, &row, "K", hPercentage)
 	excelStr(f, &row, "L", hRuns)
 	excelStr(f, &row, "M", hLaps)
-	return f, 3
+
+	return f, row
 }
 
-// excelRow populates spreadsheet cells
+// excelRow populates spreadsheet cells.
 func excelRow(f *excelize.File, d *Driver, ordinal string, row *int) {
 	*row++
 
@@ -52,10 +53,10 @@ func excelRow(f *excelize.File, d *Driver, ordinal string, row *int) {
 	excelStr(f, row, "H", d.Slowest.String())
 	excelFloat(f, row, "I", d.Slowest.Seconds())
 
-	// Slow Average equals d.Qualify.Seconds() + d.Slowest.Seconds() / 2
+	// Slow Average equals d.Qualify.Seconds() + d.Slowest.Seconds() / 2.
 	excelFormula(f, row, "J", fmt.Sprintf("(E%d+I%[1]d)/2", *row))
 
-	// Percentage equals d.Fastest.Seconds() / ((d.Slowest.Seconds() + d.Qualify.Seconds()) / 2) * 100
+	// Percentage equals d.Fastest.Seconds() / ((d.Slowest.Seconds() + d.Qualify.Seconds()) / 2) * 100.
 	excelFormula(f, row, "K", fmt.Sprintf("G%d/J%[1]d * 100", *row))
 
 	excelInt(f, row, "L", d.Runs)
@@ -80,7 +81,7 @@ func excelStr(f *excelize.File, spreadsheetRow *int, column, value string) {
 }
 
 func excelFloat(f *excelize.File, spreadsheetRow *int, column string, value float64) {
-	const bitSize = 64 // Float64 precision
+	const bitSize = 64 // Float64 precision.
 	checkErr(f.SetCellFloat(worksheet, fmt.Sprintf("%s%d", column, *spreadsheetRow), value, decimalPlaces, bitSize))
 }
 

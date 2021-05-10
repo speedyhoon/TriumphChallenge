@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	// Column headings
+	// Column headings.
 	hPosition     = "Pos"
 	hRacingNumber = "#"
 	hDriver       = "Driver"
@@ -33,7 +33,7 @@ func render(drivers []Driver, eventName string, missingCars []string, longestNam
 	var position int
 	var isEqual bool
 	for i := range drivers {
-		// Calculate if the next or previous competitor had an identical score
+		// Calculate if the next or previous competitor had an identical score.
 		if i >= 1 && drivers[i].Percentage == drivers[i-1].Percentage && drivers[i].Runs == drivers[i-1].Runs && drivers[i].Laps == drivers[i-1].Laps {
 			isEqual = true
 		} else {
@@ -54,7 +54,7 @@ func render(drivers []Driver, eventName string, missingCars []string, longestNam
 	textFooter(txt, missingCars)
 	excelFooter(excel, &spreadsheetRow, missingCars)
 
-	// Print text output to screen
+	// Print text output to screen.
 	fmt.Println(txt.String())
 
 	fileName := time.Now().Format("results-2006-01-02 15;04;06")
@@ -65,7 +65,8 @@ func render(drivers []Driver, eventName string, missingCars []string, longestNam
 }
 
 // Ordinal gives you the input number in a rank/ordinal format.
-// Ordinal(3, true) -> "=3rd"
+// Ordinal(3, true) -> "=3rd".
+// nolint:gomnd // No magic numbers
 func ordinal(x int, isEqual bool) string {
 	suffix := "th"
 

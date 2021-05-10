@@ -31,7 +31,7 @@ func main() {
 
 	comps := getCompetitorsFile()
 	if len(comps) == 0 {
-		// Keep checking standard input for a list of competitors numbers to be entered
+		// Keep checking standard input for a list of competitors numbers to be entered.
 		for len(comps) == 0 {
 			comps = prepareComps(input())
 		}
@@ -49,8 +49,9 @@ func getEventResults() (src []byte) {
 	printOnce := true
 
 	for {
-		// Check clipboard for event results
-		s, _ := clipboard.ReadAll()
+		// Check clipboard for event results.
+		s, err := clipboard.ReadAll()
+		checkErr(err)
 		if reHasDrivers.MatchString(s) {
 			src = []byte(s)
 			break
@@ -62,7 +63,7 @@ func getEventResults() (src []byte) {
 			break
 		}
 
-		// Check file
+		// nolint:errcheck,gosec // Check file ignoring all errors.
 		src, _ = ioutil.ReadFile(filename)
 
 		if reHasDrivers.Match(src) {
@@ -78,7 +79,7 @@ func getEventResults() (src []byte) {
 			printOnce = false
 		}
 
-		// Check standard input
+		// Check standard input.
 		src = input()
 		if reHasDrivers.Match(src) {
 			break
@@ -92,7 +93,7 @@ func getEventResults() (src []byte) {
 			break
 		}
 
-		// Provide some commands to exit if user gets ultra stuck
+		// Provide some commands to exit if user gets stuck.
 		exit(src)
 	}
 
@@ -136,12 +137,12 @@ func prepareComps(src []byte) (competitors [][]byte) {
 	lines := bytes.Split(src, lineDelimiter)
 	for i := range lines {
 		lines[i] = bytes.TrimSpace(lines[i])
-		// Ignore any commented out lines prefixed with #
+		// Ignore any commented out lines prefixed with #.
 		if !bytes.HasPrefix(lines[i], []byte("#")) {
 			words := bytes.Split(lines[i], []byte(" "))
 			for j := range words {
 				words[j] = bytes.TrimSpace(words[j])
-				// Check if the competitor is already in the list
+				// Check if the competitor is already in the list.
 				if len(words[j]) >= 1 && !has(competitors, words[j]) {
 					competitors = append(competitors, words[j])
 				}
@@ -155,6 +156,6 @@ func prepareComps(src []byte) (competitors [][]byte) {
 func exit(src []byte) {
 	switch strings.ToLower(string(src)) {
 	case "x", "exit", "q", "quit", "s", "stop", "h", "halt":
-		os.Exit(5)
+		os.Exit(1)
 	}
 }
