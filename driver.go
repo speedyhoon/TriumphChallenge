@@ -3,11 +3,8 @@ package main
 import (
 	"bytes"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"math"
-	"net/http"
-	"net/url"
 	"regexp"
 	"sort"
 	"strings"
@@ -16,7 +13,7 @@ import (
 
 const (
 	championship  = "All Triumph Challenge"
-	decimalPlaces = 4 // How many decimal places are used by Natsoft and to display in event results
+	decimalPlaces = 4 // How many decimal places are used by Natsoft and to display in event results.
 	natSoftURL    = "http://racing.natsoft.com.au/results/"
 	help          = `Instructions to use:
 	Open Natsoft racing results for the event ` + natSoftURL + `
@@ -34,10 +31,10 @@ const (
 )
 
 var (
-	rNonLaps  = fmt.Sprintf(`\*:\*{2}\.\*{%d}|-:-{2}.-{%[1]d}`, decimalPlaces) // *:**.**** or -:--.----
-	rLapTimes = fmt.Sprintf(`(\d:\d{2}\.\d{%d}|%s)`, decimalPlaces, rNonLaps)  // lap time OR *:**.****
+	rNonLaps  = fmt.Sprintf(`\*:\*{2}\.\*{%d}|-:-{2}.-{%[1]d}`, decimalPlaces) // *:**.**** or -:--.----.
+	rLapTimes = fmt.Sprintf(`(\d:\d{2}\.\d{%d}|%s)`, decimalPlaces, rNonLaps)  // lap time OR *:**.****.
 
-	// matches a list of lap times by a driver
+	// matches a list of lap times by a driver.
 	reHasDrivers = regexp.MustCompile(fmt.Sprintf(`\n *%s( %s)+ +((\s*\d{1,2}0 )*(%s[ p])*)*`, rRacingNumber, rDriverName, rLapTimes))
 	reLapTime    = regexp.MustCompile(rLapTimes)
 	reNonLaps    = regexp.MustCompile(rNonLaps)
@@ -47,7 +44,7 @@ var (
 	lineDelimiter = []byte("\n")
 )
 
-// Driver represents a competitor entered in the event
+// Driver represents a competitor entered in the event.
 type Driver struct {
 	RaceNumber string
 	Name       string
@@ -56,8 +53,8 @@ type Driver struct {
 	Qualify    time.Duration // aka Practice time
 	Percentage float64       //
 	Runs       uint          // aka Session. Zero based index, but the first run is ignored for Qualifying.
-	Laps       uint          // Quantity of laps completed excluding Qualifying session
-	Position   uint          // Only assigned once Driver's slice has been sorted
+	Laps       uint          // Quantity of laps completed excluding Qualifying session.
+	Position   uint          // Only assigned once Driver's slice has been sorted.
 }
 
 // sortResults returns a list of entered drivers, the event name, a list of drivers who are missing results and the longest driver name
@@ -67,13 +64,13 @@ func sortResults(results []byte, enteredCars [][]byte) (drivers []Driver, eventN
 
 	matches := reHasDrivers.FindAll(results, -1)
 
-	// Iterate through all competitors lap times
+	// Iterate through all competitors lap times.
 	for i := range matches {
-		// If this driver is a competitor
+		// If this driver is a competitor.
 		if driver, ok := newDriver(matches[i], enteredCars); ok {
 			drivers = append(drivers, driver)
 
-			// Work out driver names table column length used in text file output
+			// Work out driver names table column length used in text file output.
 			if l := uint(len(driver.Name)); l > longestNameLen {
 				longestNameLen = l
 			}
@@ -82,7 +79,7 @@ func sortResults(results []byte, enteredCars [][]byte) (drivers []Driver, eventN
 
 	sortDrivers(drivers)
 
-	// Find if there are any missing competitors
+	// Find if there are any missing competitors.
 	if len(drivers) != len(enteredCars) {
 		for i := range enteredCars {
 			if !hasRacingNum(drivers, enteredCars[i]) {
@@ -132,7 +129,7 @@ func sortDrivers(drivers []Driver) {
 			return drivers[i].Percentage > drivers[j].Percentage
 		}
 
-		// Sort by the quantity of runs/session completed in descending order (most runs/sessions first)
+		// Sort by the quantity of runs/session completed in descending order (most runs/sessions first).
 		return drivers[i].Runs > drivers[j].Runs
 	})
 }
@@ -141,7 +138,7 @@ func newDriver(line []byte, competitors [][]byte) (driver Driver, ok bool) {
 	line = bytes.TrimSpace(line)
 	raceNum := bytes.TrimSpace(reRacingNum.Find(line))
 
-	// Ignore any line/entry NOT in the list of paid competitors entered for the event
+	// Ignore any line/entry NOT in the list of paid competitors entered for the event.
 	if !has(competitors, raceNum) {
 		return
 	}
@@ -159,7 +156,7 @@ func newDriver(line []byte, competitors [][]byte) (driver Driver, ok bool) {
 
 	// Loop through all lap times.
 	for n := range lapTimes {
-		// If the lap is missing a time
+		// If the lap is missing a time.
 		if reNonLaps.Match(lapTimes[n]) {
 			//... AND If there's another lap in the list, AND the next lap is NOT the end of the Run/Session.
 			if n+1 < len(lapTimes) && !reNonLaps.Match(lapTimes[n+1]) {
@@ -189,7 +186,7 @@ func newDriver(line []byte, competitors [][]byte) (driver Driver, ok bool) {
 			// Qualifying laps completed don't count towards the quantity of laps completed during the day.
 			driver.Laps++
 
-			// Only calculate the slowest lap when not in Practice/Qualifying
+			// Only calculate the slowest lap when not in Practice/Qualifying.
 			if lapTime.Seconds() > driver.Slowest.Seconds() {
 				driver.Slowest = lapTime
 			}
