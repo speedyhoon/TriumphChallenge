@@ -9,9 +9,9 @@ import (
 
 func htmlHeading(eventName string, driversQty uint) *bytes.Buffer {
 	return bytes.NewBufferString(
-		fmt.Sprintf(`<!DOCTYPE html><html lang=en><title>%s</title><link rel=icon href="data:image/x-icon;base64,%s"><style>body{font-family:sans-serif}h1{color:#07f;text-align:center}table{width:100%%}th{text-align:left}</style><h1>%[1]s</h1><b>%[3]s %d</b><table><thead><tr><th>%[5]s<th>%[6]s<th>%[7]s<th>%[8]s<th>%[9]s<th>%[10]s<th>%[9]s<th>%[11]s<th>%[9]s<th>%[12]s<th>%[13]s<th>%[14]s<th>%[15]s<tbody>`,
+		fmt.Sprintf(`<!DOCTYPE html><html lang=en><title>%s</title><link rel=icon href="%s"><style>body{font-family:sans-serif}h1{color:#07f;text-align:center}table{width:100%%}th{text-align:left}</style><h1><img src="%[16]s" alt="%[17]s logo"> %[1]s</h1><b>%[3]s %d</b><table><thead><tr><th>%[5]s<th>%[6]s<th>%[7]s<th>%[8]s<th>%[9]s<th>%[10]s<th>%[9]s<th>%[11]s<th>%[9]s<th>%[12]s<th>%[13]s<th>%[14]s<th>%[15]s<tbody>`,
 			eventName,
-			favicon,
+			faviconB64,
 			hCompetitors,
 			driversQty,
 			hPosition,
@@ -25,6 +25,8 @@ func htmlHeading(eventName string, driversQty uint) *bytes.Buffer {
 			hPercentage,
 			hRuns,
 			hLaps,
+			logoB64,
+			championship,
 		),
 	)
 }
