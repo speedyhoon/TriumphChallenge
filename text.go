@@ -41,7 +41,7 @@ func textRow(txt io.Writer, d *Driver, ordinal string, longestNameLen uint) {
 		d.Qualify, d.Qualify.Seconds(),
 		d.Fastest, d.Fastest.Seconds(),
 		d.Slowest, d.Slowest.Seconds(),
-		(d.Slowest.Seconds()+d.Qualify.Seconds())/2,
+		d.SlowAv,
 		d.Percentage,
 		d.Runs,
 		d.Laps,
