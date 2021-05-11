@@ -20,11 +20,12 @@ Pos     # Driver       Qualify     Secs      Fastest     Secs      Slowest     S
 - Locate the event on [Natsoft racing results](http://racing.natsoft.com.au/results/)
 - Copy the results. `Ctrl + A` then `Ctrl + C` on Windows or `Command + A` then `Command + C` on Mac.
 - Start the TriumphChallenge program
-- The program will detect the [Natsoft racing results](http://racing.natsoft.com.au/results/) in your clipboard if present. Otherwise, it will prompt for input.
+- The program will detect the [Natsoft racing results](http://racing.natsoft.com.au/results/) in your clipboard if present. Otherwise, it will prompt for input.\
+  Press `Enter` to continue once the results are copied into your clipboard.
 - Type in the list of competitors racing numbers separated by a space.\
   For example: `1 881 4 55 92 5 7 9 13 43`
 - Press `Enter`
-- Results will be calculated and saved in HTML, Text and XLSX spreadsheet files with a copy of the [Natsoft racing results](http://racing.natsoft.com.au/results/).
+- Results will be calculated and saved in HTML, Text and XLSX spreadsheet files with a copy of the [Natsoft racing results](http://racing.natsoft.com.au/results/) and competitor list.
 
 
 ## Results Formula
@@ -61,6 +62,11 @@ Then is calculated:
 - Competitors who fail to complete a lap time during qualifying won't be eligible for any placing. 
 - Decimal numbers are calculated and sorted using 64 bit precision.
 - Percentage results in HTML and text format are displayed with 8 decimal places. Spreadsheet format uses built-in formulas to display decimal numbers (precision varies between software).
+
+## Permissions
+The application may need permission granted to allow execution. This is used for:
+- Saving files to disk and
+- Opening [Natsoft racing results](http://racing.natsoft.com.au/results/) in your default browser.
 
 ## Build
 Built using [go-winres](https://github.com/tc-hib/go-winres)
