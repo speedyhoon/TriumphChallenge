@@ -31,3 +31,9 @@ func checkErr(err error) {
 		fmt.Println(err)
 	}
 }
+
+func yes(input []byte) bool {
+	input = bytes.TrimSpace(input)
+
+	return bytes.EqualFold(input, []byte("y")) || bytes.EqualFold(input, []byte("yes"))
+}

@@ -102,12 +102,6 @@ func getEventResults() (src []byte) {
 	return
 }
 
-func yes(input []byte) bool {
-	input = bytes.TrimSpace(input)
-
-	return bytes.EqualFold(input, []byte("y")) || bytes.EqualFold(input, []byte("yes"))
-}
-
 func input() []byte {
 	// ReadString will block until the delimiter is entered.
 	input, err := bufio.NewReader(os.Stdin).ReadBytes('\n')
