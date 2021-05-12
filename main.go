@@ -54,6 +54,7 @@ func getEventResults() (src []byte) {
 		checkErr(err)
 		if reHasDrivers.MatchString(s) {
 			src = []byte(s)
+			fmt.Println("found event results in the clipboard")
 			break
 		}
 
