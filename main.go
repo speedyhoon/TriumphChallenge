@@ -155,7 +155,7 @@ func prepareComps(src []byte) (competitors [][]byte) {
 
 func exit(src []byte) {
 	switch strings.ToLower(string(src)) {
-	case "x", "exit", "q", "quit", "s", "stop", "h", "halt":
+	case "x", "exit", "q", "quit", "s", "stop", "h", "halt", "bye", "goodbye":
 		os.Exit(1)
 	}
 }
