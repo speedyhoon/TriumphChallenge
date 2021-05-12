@@ -93,9 +93,6 @@ func getEventResults() (src []byte) {
 		if reHasDrivers.Match(src) {
 			break
 		}*/
-
-		// Provide some commands to exit if user gets stuck.
-		exit(src)
 	}
 
 	checkErr(ioutil.WriteFile(filename, src, filePermission))
@@ -105,14 +102,15 @@ func getEventResults() (src []byte) {
 
 func input() []byte {
 	// ReadString will block until the delimiter is entered.
-	input, err := bufio.NewReader(os.Stdin).ReadBytes('\n')
-	if err != nil {
-		fmt.Println(err)
-		return input
-	}
+	src, err := bufio.NewReader(os.Stdin).ReadBytes('\n')
+	checkErr(err)
 
 	// Remove the '\n' delimiter from the string.
-	return bytes.TrimSpace(input)
+	src = bytes.TrimSpace(src)
+
+	// Provide some commands to exit if the user gets stuck.
+	exit(src)
+	return src
 }
 
 func getCompetitorsFile() [][]byte {
