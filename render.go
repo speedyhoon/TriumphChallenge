@@ -57,7 +57,7 @@ func render(drivers []Driver, eventName string, missingCars []string, longestNam
 	// Print text output to screen.
 	fmt.Println(txt.String())
 
-	fileName := time.Now().Format("results-2006-01-02 15;04;06")
+	fileName := time.Now().Format("results-2006-01-02 3;4;05")
 
 	checkErr(ioutil.WriteFile(fileName+".txt", txt.Bytes(), filePermission))
 	checkErr(ioutil.WriteFile(fileName+".html", html.Bytes(), filePermission))
