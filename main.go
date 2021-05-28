@@ -7,10 +7,12 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 	"strings"
 	"time"
 
 	"github.com/atotto/clipboard"
+	"github.com/speedyhoon/utl"
 )
 
 const (
@@ -44,7 +46,7 @@ func main() {
 
 func getEventResults() (src []byte) {
 	// Try to find a text file with today's date.
-	filename := time.Now().Format("event-2006-01-02.txt")
+	filename := filepath.Join(utl.Cwd(), time.Now().Format("event-2006-01-02.txt"))
 
 	printOnce := true
 
@@ -64,9 +66,15 @@ func getEventResults() (src []byte) {
 			break
 		}*/
 
-		// nolint:errcheck,gosec // Check file ignoring all errors.
-		src, _ = ioutil.ReadFile(filename)
+		//nolint:errcheck,gosec // Check filepath stored in clipboard (if any) for event results, ignoring all errors.
+		src, _ = ioutil.ReadFile(s)
+		if reHasDrivers.Match(src) {
+			fmt.Println("Using the results from", s)
+			return
+		}
 
+		//nolint:errcheck,gosec // Check today's file for event results, ignoring all errors.
+		src, _ = ioutil.ReadFile(filename)
 		if reHasDrivers.Match(src) {
 			fmt.Println("Using the results from", filename)
 			return
