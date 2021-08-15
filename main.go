@@ -13,6 +13,7 @@ import (
 
 	"github.com/atotto/clipboard"
 	"github.com/speedyhoon/utl"
+	"github.com/speedyhoon/utl/brwsr"
 )
 
 const (
@@ -83,7 +84,9 @@ func getEventResults() (src []byte) {
 		if printOnce {
 			fmt.Printf("\n\nNo results found in %s or the clipboard. Please copy event results from %s\nDo you want to open Natsoft in your default browser? [ y / n ]\n", filename, natSoftURL)
 			if yes(input()) {
-				openBrowser()
+				if err = brwsr.Open(natSoftURL); err != nil {
+					fmt.Println(err)
+				}
 			}
 			printOnce = false
 		}
