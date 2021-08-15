@@ -23,6 +23,7 @@ func main() {
 
 func base64File(path string) string {
 	// Open file on disk.
+	//nolint:gosec // The path provided is hardcoded.
 	f, err := os.Open(path)
 	if err != nil {
 		fmt.Println(err)
@@ -36,6 +37,6 @@ func base64File(path string) string {
 		fmt.Println(err)
 	}
 
-	//base64 encode image
+	// Base64 encode image.
 	return "base64," + base64.StdEncoding.EncodeToString(src)
 }
