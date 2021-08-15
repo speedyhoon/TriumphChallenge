@@ -3,8 +3,9 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
-	"strconv"
 	"time"
+
+	"github.com/speedyhoon/utl"
 )
 
 const (
@@ -30,9 +31,9 @@ func render(drivers []Driver, eventName string, missingCars []string, longestNam
 	html := htmlHeading(eventName, l)
 	txt := txtHeading(eventName, l, longestNameLen)
 
-	var position int
+	var position, i uint
 	var isEqual bool
-	for i := range drivers {
+	for i = range drivers {
 		// Calculate if the next or previous competitor had an identical score.
 		if i >= 1 && drivers[i].Percentage == drivers[i-1].Percentage && drivers[i].Runs == drivers[i-1].Runs && drivers[i].Laps == drivers[i-1].Laps {
 			isEqual = true
@@ -40,10 +41,10 @@ func render(drivers []Driver, eventName string, missingCars []string, longestNam
 			// Ignore positions occupied by drivers with equal results, like: =1st, =1st, =3rd, =3rd, =5th, =5th. Change to `position++` for the opposite effect like: =1st, =1st, =2nd, =2nd, =3rd, =3rd.
 			position = i + 1
 
-			isEqual = i+1 < len(drivers) && drivers[i].Percentage == drivers[i+1].Percentage && drivers[i].Runs == drivers[i+1].Runs && drivers[i].Laps == drivers[i+1].Laps
+			isEqual = position < uint(len(drivers)) && drivers[i].Percentage == drivers[i+1].Percentage && drivers[i].Runs == drivers[i+1].Runs && drivers[i].Laps == drivers[i+1].Laps
 		}
 
-		ord := ordinal(position, isEqual)
+		ord := utl.Ordinal(position, isEqual)
 
 		htmlRow(html, &drivers[i], ord)
 		textRow(txt, &drivers[i], ord, longestNameLen)
@@ -62,32 +63,4 @@ func render(drivers []Driver, eventName string, missingCars []string, longestNam
 	checkErr(ioutil.WriteFile(fileName+".txt", txt.Bytes(), filePermission))
 	checkErr(ioutil.WriteFile(fileName+".html", html.Bytes(), filePermission))
 	checkErr(excel.SaveAs(fileName + ".xlsx"))
-}
-
-// Ordinal gives you the input number in a rank/ordinal format.
-// Ordinal(3, true) -> "=3rd".
-// nolint:gomnd // No magic numbers
-func ordinal(x int, isEqual bool) string {
-	suffix := "th"
-
-	switch x % 10 {
-	case 1:
-		if x%100 != 11 {
-			suffix = "st"
-		}
-	case 2:
-		if x%100 != 12 {
-			suffix = "nd"
-		}
-	case 3:
-		if x%100 != 13 {
-			suffix = "rd"
-		}
-	}
-
-	if isEqual {
-		return "=" + strconv.Itoa(x) + suffix
-	}
-
-	return strconv.Itoa(x) + suffix
 }
