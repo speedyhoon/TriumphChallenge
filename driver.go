@@ -32,9 +32,9 @@ const (
 
 var (
 	rNonLaps  = fmt.Sprintf(`\*:\*{2}\.\*{%d}|-:-{2}.-{%[1]d}`, decimalPlaces) // *:**.**** or -:--.----.
-	rLapTimes = fmt.Sprintf(`(\d:\d{2}\.\d{%d}|%s)`, decimalPlaces, rNonLaps)  // lap time OR *:**.****.
+	rLapTimes = fmt.Sprintf(`(\d:\d{2}\.\d{%d}|%s)`, decimalPlaces, rNonLaps)  // Lap time OR *:**.****.
 
-	// matches a list of lap times by a driver.
+	// Matches a list of lap times by a driver.
 	reHasDrivers = regexp.MustCompile(fmt.Sprintf(`\n *%s( %s)+ +((\s*\d{1,2}0 )*(%s[ p])*)*`, rRacingNumber, rDriverName, rLapTimes))
 	reLapTime    = regexp.MustCompile(rLapTimes)
 	reNonLaps    = regexp.MustCompile(rNonLaps)
@@ -50,10 +50,10 @@ type Driver struct {
 	Name       string
 	Fastest    time.Duration // The fastest time excluding Qualifying session.
 	Slowest    time.Duration // The slowest time excluding Qualifying session.
-	Qualify    time.Duration // aka Practice time.
+	Qualify    time.Duration // The fastest time during Qualifying session (aka Practice Run).
 	SlowAv     float64       // Slow Average.
 	Percentage float64       //
-	Runs       uint          // aka Session. Zero based index, but the first run is ignored for Qualifying.
+	Runs       uint          // Also known as a `Session`. Zero based index, but the first run is ignored for Qualifying.
 	Laps       uint          // Quantity of laps completed excluding Qualifying session.
 	Position   uint          // Only assigned once Driver's slice has been sorted.
 }
@@ -154,7 +154,7 @@ func newDriver(line []byte, competitors [][]byte) (driver Driver, ok bool) {
 	driver.lapTimes(line)
 
 	// If at least one session is completed,.
-	// nolint:gomnd // Ignore hardcoded numbers
+	//nolint:gomnd // Ignore hardcoded numbers
 	if driver.Runs >= 1 && driver.Qualify != math.MaxInt64 && driver.Fastest != math.MaxInt64 {
 		// Calculate scoring percentage formula.
 		driver.SlowAv = (driver.Slowest.Seconds() + driver.Qualify.Seconds()) / 2
@@ -182,7 +182,7 @@ func (driver *Driver) lapTimes(line []byte) {
 	for n := range lapTimes {
 		// If the lap is missing a time.
 		if reNonLaps.Match(lapTimes[n]) {
-			//... AND If there's another lap in the list, AND the next lap is NOT the end of the Run/Session.
+			// ... AND If there's another lap in the list, AND the next lap is NOT the end of the Run/Session.
 			if n+1 < len(lapTimes) && !reNonLaps.Match(lapTimes[n+1]) {
 				driver.Runs++
 			}
