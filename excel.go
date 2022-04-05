@@ -2,8 +2,9 @@ package main
 
 import (
 	"fmt"
+	"strconv"
 
-	"github.com/360EntSecGroup-Skylar/excelize"
+	"github.com/xuri/excelize/v2"
 )
 
 const worksheet = "Sheet1"
@@ -69,26 +70,30 @@ func excelFooter(xlsx *excelize.File, spreadsheetRow *int, missingCars []string)
 	}
 
 	*spreadsheetRow += 2
-	checkErr(xlsx.SetCellStr(worksheet, fmt.Sprintf("A%d", *spreadsheetRow), hMissing))
+	checkErr(xlsx.SetCellStr(worksheet, axis(spreadsheetRow, "A"), hMissing))
 	for i := range missingCars {
 		*spreadsheetRow++
-		checkErr(xlsx.SetCellStr(worksheet, fmt.Sprintf("A%d", *spreadsheetRow), missingCars[i]))
+		checkErr(xlsx.SetCellStr(worksheet, axis(spreadsheetRow, "A"), missingCars[i]))
 	}
 }
 
 func excelStr(f *excelize.File, spreadsheetRow *int, column, value string) {
-	checkErr(f.SetCellStr(worksheet, fmt.Sprintf("%s%d", column, *spreadsheetRow), value))
+	checkErr(f.SetCellStr(worksheet, axis(spreadsheetRow, column), value))
 }
 
 func excelFloat(f *excelize.File, spreadsheetRow *int, column string, value float64) {
 	const bitSize = 64 // Float64 precision.
-	checkErr(f.SetCellFloat(worksheet, fmt.Sprintf("%s%d", column, *spreadsheetRow), value, decimalPlaces, bitSize))
+	checkErr(f.SetCellDefault(worksheet, axis(spreadsheetRow, column), strconv.FormatFloat(value, 'f', decimalPlaces, bitSize)))
 }
 
 func excelFormula(f *excelize.File, spreadsheetRow *int, column, value string) {
-	checkErr(f.SetCellFormula(worksheet, fmt.Sprintf("%s%d", column, *spreadsheetRow), value))
+	checkErr(f.SetCellFormula(worksheet, axis(spreadsheetRow, column), value))
 }
 
 func excelInt(f *excelize.File, spreadsheetRow *int, column string, value uint) {
-	checkErr(f.SetCellInt(worksheet, fmt.Sprintf("%s%d", column, *spreadsheetRow), int(value)))
+	checkErr(f.SetCellInt(worksheet, axis(spreadsheetRow, column), int(value)))
+}
+
+func axis(row *int, column string) string {
+	return fmt.Sprintf("%s%d", column, *row)
 }
