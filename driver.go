@@ -206,6 +206,11 @@ func (driver *Driver) lapTimes(line []byte) {
 			continue
 		}
 
+		// Calculate the fastest lap.
+		if lapTime.Seconds() < driver.Fastest.Seconds() {
+			driver.Fastest = lapTime
+		}
+
 		if driver.Runs >= 1 {
 			// Qualifying laps completed don't count towards the quantity of laps completed during the day.
 			driver.Laps++
@@ -213,11 +218,6 @@ func (driver *Driver) lapTimes(line []byte) {
 			// Only calculate the slowest lap when not in Practice/Qualifying.
 			if lapTime.Seconds() > driver.Slowest.Seconds() {
 				driver.Slowest = lapTime
-			}
-
-			// Calculate the fastest lap.
-			if lapTime.Seconds() < driver.Fastest.Seconds() {
-				driver.Fastest = lapTime
 			}
 		} else if lapTime.Seconds() < driver.Qualify.Seconds() {
 			// Calculate the fastest qualifying lap only during the qualifying session/run.
