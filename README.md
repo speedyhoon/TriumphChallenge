@@ -50,7 +50,8 @@ Then is calculated:
 
 ## Event Rules
 - Laps completed during the practice session don't count towards the total quantity of laps completed.
-- The **Fastest lap time** and **Slowest lap time** is calculated for each competitor excluding their practice session.
+- The **Fastest lap time** is calculated for each competitor including their practice session.
+- The **Slowest lap time** is calculated for each competitor excluding their practice session.
 - The **Qualifying lap time** is calculated for each competitor only during their practice session.
 - The highest possible score is **100** and the lowest possible score is **0**.
 - Competitors are sorted by:
